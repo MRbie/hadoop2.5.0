@@ -14,6 +14,8 @@ public class HdfsUtils {
 	public static Configuration getConfiguration(){
 		Configuration conf = new Configuration();
 		conf.set("fs.defaultFS", "hdfs://192.168.19.131:9000");
+		//重启机器或者设置这个值
+		//System.setProperty("hadoop.home.dir","D:/biexiansheng/hadoop/hadoop-2.5.0-cdh5.3.6");
 		return conf;
 	}
 	

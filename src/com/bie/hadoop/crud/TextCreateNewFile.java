@@ -238,7 +238,7 @@ public class TextCreateNewFile {
 		//9、下载文件
 		//copyToLocalFile();
 		//10、获取到文件的状态
-		getFileStatus();
+		//getFileStatus();
 		
 		
 	}
