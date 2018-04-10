@@ -2,7 +2,10 @@ package com.bie.hbase;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.NavigableMap;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
@@ -17,6 +20,8 @@ import org.apache.hadoop.hbase.client.HBaseAdmin;
 import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.client.ResultScanner;
+import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.util.Bytes;
 
 import com.bie.hbase.utils.HbaseUtils;
@@ -201,6 +206,58 @@ public class HbaseCreateTable {
 		}
 	}
 	
+	
+	/**
+	 * scan的用法
+	 * @param conf
+	 * @param htTable
+	 */
+	public static void hbaseTableScan(Configuration conf, HTable htTable){
+		TableName tableName = TableName.valueOf("student");
+		Scan scan = new Scan();
+		//可以设置起始行
+		scan.setStartRow(Bytes.toBytes("row1"));
+		scan.setStopRow(Bytes.toBytes("row5"));
+		try {
+			htTable = new HTable(conf, tableName);
+			ResultScanner rs = htTable.getScanner(scan);
+			Iterator<Result> iterator = rs.iterator();
+			Result result = null;
+			while(iterator.hasNext()){
+				result = iterator.next();
+				printScanResult(result);
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * scan的打印结果
+	 */
+	public static void printScanResult(Result result){
+		//打印结果
+		System.out.println("******************************************");
+		NavigableMap<byte[], NavigableMap<byte[], NavigableMap<Long, byte[]>>> map = result.getMap();
+		for(Map.Entry<byte[], NavigableMap<byte[], NavigableMap<Long, byte[]>>> entry : map.entrySet()){
+			String family = Bytes.toString(entry.getKey());
+			for(Map.Entry<byte[], NavigableMap<Long, byte[]>> columnEntry : entry.getValue().entrySet()){
+				//获取到列名称
+				String column = Bytes.toString(columnEntry.getKey());
+				String value = Bytes.toString(columnEntry.getValue().firstEntry().getValue());
+				//String value = "";
+				//if("age".equals(column)){
+					//value = "" + Bytes.toInt(columnEntry.getValue().firstEntry().getValue());
+				//}else{
+					//value = Bytes.toString(columnEntry.getValue().firstEntry().getValue());
+				//}
+				System.out.println("family:" +family + ",列名称:" +column + ",值:" + value);
+			}
+		}
+		System.out.println("******************************************");
+	}
+	
 	public static void main(String[] args) {
 		//获取到hbase的配置信息
 		Configuration conf = HbaseUtils.getHbaseConfiguration();
@@ -222,7 +279,10 @@ public class HbaseCreateTable {
 			//5、获取到数据表的信息
 			//hbaseTableGet(conf, htTable);
 			//6、删除数据表信息
-			hbaseTableDelete(conf, htTable);
+			//hbaseTableDelete(conf, htTable);
+			//7、scan的使用
+			hbaseTableScan(conf, htTable);
+			
 			
 			//最后释放资源
 			hbaseAdmin.close();
