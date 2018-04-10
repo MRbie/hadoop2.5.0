@@ -1,4 +1,4 @@
-package com.bie.hbase;
+package com.bie.hbase.ddl;
 
 import java.io.IOException;
 import java.util.ArrayList;
