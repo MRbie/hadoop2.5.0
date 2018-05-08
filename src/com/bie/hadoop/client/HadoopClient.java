@@ -1,11 +1,16 @@
 package com.bie.hadoop.client;
 
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FSDataInputStream;
+import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.LocatedFileStatus;
 import org.apache.hadoop.fs.Path;
@@ -115,6 +120,98 @@ public class HadoopClient {
 			e.printStackTrace();
 		}
 	
+	}
+	
+	
+	@Test
+	public void ioUpload(){
+		try {
+			FileInputStream input = new FileInputStream("E://20180507.txt");
+			FSDataOutputStream output = fs.create(new Path("/201805/20180508.txt"));
+			IOUtils.copy(input, output);
+			System.out.println("文件上传结束......");
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	//input 读  output 写
+	@Test
+	public void iodownload(){
+		try {
+			FileOutputStream output = new FileOutputStream("E://20180507");
+			FSDataInputStream input = fs.open(new Path("/201805/20180508"));
+			IOUtils.copy(input, output);
+			System.out.println("文件下载结束......");
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
+	@Test
+	public void ioRandom(){
+		try {
+			//input 读
+			FSDataInputStream input = fs.open(new Path("/201805/20180508"));
+			
+			//
+			input.seek(50000);
+			
+			//output 写
+			FileOutputStream output = new FileOutputStream("E://20180508");
+			
+			IOUtils.copy(input, output);
+			System.out.println("文件读取指定文件......");
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void cat(){
+		try {
+			//input 读
+			FSDataInputStream input = fs.open(new Path("/201805/20180507.txt"));
+			
+			//
+			//input.seek(50000);
+			
+			//output 写
+			//FileOutputStream output = new FileOutputStream("E://20180508");
+			
+			IOUtils.copy(input, System.out);
+			//org.apache.hadoop.io.IOUtils.copyBytes(input, System.out, 5000);
+			
+			System.out.println("文件读取结束......");
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	
